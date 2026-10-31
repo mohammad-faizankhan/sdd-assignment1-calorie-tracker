@@ -1,10 +1,10 @@
-﻿# Calorie and Nutrition Tracker
+# Calorie and Nutrition Tracker
 
 ## Overview
 
-The Calorie and Nutrition Tracker is a planned local, single-user web application for manually tracking food intake, daily calories, and protein. It is intended to help a person record meals, review selected-date summaries, and compare intake against optional personal targets without using external nutrition services or creating user accounts.
+The Calorie and Nutrition Tracker is a local, single-user web application for manually tracking meals, calories, protein, and optional daily targets. It supports selected-date meal review, historical meal retention, edit/delete workflows, and responsive browser usage on the same device.
 
-This repository is in the Spec-Driven Development planning and review stage and contains the governing constitution, feature specification, technical plan, task breakdown, validation matrix, and project documentation. No implementation source code has been generated in this repository.
+This repository contains both the governing SDD artifacts and the implementation for the approved V1 baseline. The app is intentionally local-only and does not include authentication, multi-user support, external nutrition lookups, or meal auto-deletion.
 
 ## Objectives
 
@@ -12,13 +12,13 @@ The approved V1 objectives are to:
 
 - allow users to manually record meals with valid required information
 - support selected-date meal review and daily calorie/protein totals
-- preserve historical records and allow access to previous dates
+- retain historical meal records and allow access to previous dates
 - support meal editing, including date changes, and deletion with confirmation
 - allow optional calorie and protein target configuration
 - keep the application responsive for desktop and mobile browsers on the same device
 - maintain a simple local single-user architecture with no authentication or multi-user access
 
-## Planned V1 features
+## Included V1 features
 
 - Manual meal entry
 - Meal categories: Breakfast, Lunch, Dinner, Snack
@@ -26,7 +26,7 @@ The approved V1 objectives are to:
 - Daily nutrition summaries by selected date
 - Optional daily calorie and protein targets configured by the user
 - Historical retention and previous-date meal access
-- Meal viewing, editing, and deletion
+- Meal viewing, editing, and deletion with confirmation
 - Responsive browser interface for desktop and mobile browsers
 - Data stored locally in SQLite on the same device
 
@@ -57,8 +57,6 @@ The approved implementation stack is:
 - React Testing Library
 - Git
 
-These technologies support the planned local single-user architecture and validation workflow.
-
 ## Project structure
 
 ```text
@@ -69,11 +67,20 @@ assignment-1/
 │   ├── templates/
 │   ├── workflows/
 │   └── ...
+├── backend/
+│   ├── app/
+│   ├── tests/
+│   └── requirements.txt
 ├── docs/
 │   ├── clarification-log.md
 │   ├── prompt-log.md
 │   ├── review-record.md
 │   └── validation-plan.md
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   ├── vite.config.js
+│   └── index.html
 ├── specs/
 │   └── 001-calorie-nutrition-tracker/
 │       ├── contracts/
@@ -84,23 +91,20 @@ assignment-1/
 │       ├── spec.md
 │       └── tasks.md
 ├── README.md
-└── (no source-code implementation directories are present yet)
+├── .venv/
+└── .gitignore
 ```
 
 ## Prerequisites
 
-Planned implementation prerequisites include:
+Required to run the application locally:
 
-- Python with a supported version selected during setup
+- Python 3.13 or compatible version
 - Node.js and npm
 - Git
-- A local virtual environment for Python-based development work
-
-No runtime directories or dependency manifests are present yet because the project is still in the planning and baseline stage.
+- A local Python virtual environment
 
 ## Setup and installation
-
-The project artifacts describe the planned setup flow as follows:
 
 ```powershell
 python -m venv .venv
@@ -109,40 +113,44 @@ python -m pip install -r backend\requirements.txt
 npm --prefix frontend install
 ```
 
-These are planned commands only and are not claimed to have been executed in this repository.
-
 ## Running the application
 
-Planned local execution:
+Start the backend:
 
 ```powershell
 uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
+```
+
+Start the frontend:
+
+```powershell
 npm --prefix frontend run dev -- --host 127.0.0.1
 ```
 
-The app is intended to run locally on the same device and is not planned for deployment as a shared multi-user service.
+The app is intended to run locally on the same device and is not intended for shared multi-user deployment.
 
 ## Running tests
 
-Planned test commands for implementation:
+```powershell
+cd backend
+..\.venv\Scripts\python.exe -m pytest -q
 
-- Backend tests: `pytest`
-- Frontend tests: `npm --prefix frontend test -- --run`
-- Frontend build: `npm --prefix frontend run build`
+cd ..
+npm --prefix frontend test -- --run
+npm --prefix frontend run build
+```
 
-No implementation code or recorded test results are present yet.
-
-## Spec-Driven Development process
+## Spec-Driven Development workflow
 
 This project follows the Spec Kit workflow:
 
 - Constitution establishes the governing principles.
 - Specification captures business requirements and acceptance criteria.
-- Clarification records the approved decisions and preserves the historical record.
-- Technical planning maps the approved scope to implementation architecture.
-- Task breakdown converts the approved plan into structured work.
-- Validation planning defines the tests for required scenarios.
-- Implementation is intentionally deferred until the approved baseline is established and the project is ready for execution.
+- Clarification records approved decisions and preserves the historical record.
+- Technical planning maps the approved scope to the architecture.
+- Task breakdown converts the plan to executable work.
+- Validation planning defines the expected scenarios and edge cases.
+- Implementation proceeds under the approved baseline only.
 
 ## Documentation
 
@@ -159,7 +167,7 @@ Relevant project files:
 
 ## Current project status
 
-The project has reached the approved SDD Baseline v1.0.0 at the planning layer. The repository contains the approved specification, plan, tasks, validation matrix, and documentation. The project is not yet an implementation codebase and no application source code has been generated.
+The repository contains the approved SDD baseline and a working local implementation of the V1 application. The implemented features match the approved scope and business decisions, and the current automated checks pass.
 
 ## Future enhancements
 
@@ -174,4 +182,4 @@ These enhancements remain outside the approved V1 scope and should only be intro
 
 ## Final status
 
-The repository is ready as a planning baseline for implementation, but it remains a documentation-first project until execution begins under the approved V1 scope.
+The project is implemented according to the approved local-only V1 scope and is ready for local validation and further refinement under the documented baseline.
