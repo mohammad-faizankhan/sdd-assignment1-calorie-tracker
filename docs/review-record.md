@@ -1,8 +1,8 @@
-# Specification Review Record
+﻿# Specification Review Record
 
 ## Purpose
 
-This review checks the Calorie and Nutrition Tracker feature specification and related planning artifacts for consistency with the approved project constitution, business clarifications, and implementation guidance. The purpose is to identify gaps, unresolved requirements, and the minimum corrections needed before the specification can be accepted for implementation.
+This review confirms that the Calorie and Nutrition Tracker feature specification, plan, task breakdown, and supporting documentation are aligned with the approved V1 business scope and the explicit project-owner approvals recorded in the clarification log. The review validates that the current SDD baseline is consistent and ready for the v1.0.0 planning baseline.
 
 ## Artifacts reviewed
 
@@ -10,54 +10,73 @@ This review checks the Calorie and Nutrition Tracker feature specification and r
 - Feature specification: `specs/001-calorie-nutrition-tracker/spec.md`
 - Technical plan: `specs/001-calorie-nutrition-tracker/plan.md`
 - Task breakdown: `specs/001-calorie-nutrition-tracker/tasks.md`
-- Research/decision record: `specs/001-calorie-nutrition-tracker/research.md`
-- Clarification log: `docs/clarification-log.md`
+- Supporting design files: `research.md`, `data-model.md`, `quickstart.md`, `contracts/openapi.yaml`
+- Documentation: `docs/clarification-log.md`, `docs/validation-plan.md`, `docs/prompt-log.md`
+- Project overview: `README.md`
 
-## Comparison of agreed business decisions against the specification
+## Approved business decisions
 
-| Decision area | Agreed business decision | Spec alignment | Notes |
-| --- | --- | --- | --- |
-| Access model | Local, single-user app; no authentication required. | Aligned | The specification states no accounts and no shared multi-user dataset. |
-| Meal form | Required food name, meal category, serving/quantity, calories, protein, and date; time and notes optional. | Aligned | The spec defines the required meal fields and optional fields consistently. |
-| Categories | Breakfast, Lunch, Dinner, Snack only. | Aligned | The spec requires the fixed list and prohibits custom categories. |
-| Targets | Daily targets are optional. | Aligned | The spec treats targets as optional and distinguishes unset from zero. |
-| Nutrition sources | Manual entry only; no API or food database. | Aligned | The spec explicitly excludes external nutrition lookup and barcode functionality. |
-| Meal lifecycle | Users can view, edit, and delete meals; deletion requires confirmation; totals recalc. | Partially aligned | The spec describes edit/delete behavior and recalculation, but the confirmation UX is not explicitly expressed as an acceptance criterion. |
-| Historical retention | Unresolved. | Aligned as unresolved | The spec and plan explicitly preserve this as an open question rather than inventing a policy. |
-| Quantity units | Unresolved in the current baseline; unit handling is limited by the clarified business record. | Aligned as unresolved | This should remain visible rather than being assumed or expanded. |
-| Target suggestions | Unresolved; no invented values. | Aligned | The spec explicitly gates any numerical suggestion content until approved. |
+- CL-001: Responsive browser-accessible web application for desktop and mobile browsers.
+- CL-002: Required meal information includes food name, category, quantity/serving, calories, protein, and date; time and notes are optional.
+- CL-003: Meal categories are limited to Breakfast, Lunch, Dinner, and Snack.
+- CL-004: Daily targets are optional and configurable.
+- CL-005: Nutrition values are manually entered; no food database, external API, or barcode scanning in V1.
+- CL-006: Users can view, edit, and delete meals; deletion requires confirmation; totals recalculate.
+- CL-007: Historical meal retention is approved; previous-date records remain available.
+- D-001: Users can edit a saved meal's date and both date totals recalculate.
+- D-002: Quantity requires a positive numeric value plus one of the approved predefined units.
+- D-003: No default numeric target suggestions in V1.
+- D-004: V1 is a local single-user application with no login, registration, or multi-user access.
+- D-005: All meal records are retained until the user explicitly deletes them; no automatic cleanup or expiration.
 
-## Missing, conflicting, or ambiguous requirements
+## Requirement-to-clarification consistency
 
-1. Historical meal retention remains an open question and is not yet approved as either date-limited or persistent across the full date range.
-2. Meal date-edit behavior remains unresolved; the feature specification and planning documents explicitly avoid imposing a hard date lock without approval.
-3. The exact unit set for quantity/serving remains a business clarification that has not been finalized in the specification narrative.
-4. The target-suggestion feature is intentionally blocked from numeric implementation until Q-004a is approved, but the user-facing requirement should remain clearly marked as pending rather than silently omitted.
-5. The confirmation step for meal deletion is called out in the clarification record, but it is not fully represented as an explicit acceptance criterion in the current specification.
-6. The project remains a local single-user tracker; it does not include user accounts, authentication, or shared device access beyond the same-device browser requirement.
+The specification aligns with the approved business decisions and reflects the explicit project-owner approval for all V1 business requirements. Historical meal retention and prior-date summaries are present consistently across spec, plan, tasks, validation, and documentation. There are no contradictory business decisions remaining in the SDD artifact set.
 
-## Corrections required
+## Requirement-to-acceptance-criteria traceability
 
-- Keep unresolved business decisions explicitly flagged as pending rather than converting them into default behavior.
-- Maintain a consistent rule that summary calculations are date-scoped without deleting other stored meal records while historical retention is unresolved.
-- Retain the local-only, single-user constraint in the specification, plan, and tasks without expanding the application into multi-user or authenticated behavior.
-- Keep target suggestions out of implementation scope until approval is received; do not seed values or present them as accepted defaults.
-- Ensure task traceability remains tied to existing acceptance criteria IDs, not invented IDs.
+The current feature specification maps the approved business behavior to specific acceptance criteria. Requirements for creation, validation, categories, units, historical retention, editing, deletion, optional targets, local single-user operation, and responsive layout are all traceable to acceptance criteria IDs in the specification.
 
-## Remaining unresolved questions
+## Acceptance-criteria-to-task traceability
 
-- Can users view historical meal records, or only today's meals?
-- Which units should quantity/serving support?
-- Should the application suggest default nutrition targets?
-- Is authentication or user registration required?
-- What is the data-retention policy?
+The task breakdown maps implementation work to real acceptance criteria IDs and avoids unsupported cleanup logic, default target suggestions, or authentication tasks. Every implementation task reflects an approved requirement or a clearly supported implementation guardrail.
 
-## Review outcome and baseline version
+## Technical consistency
 
-- Review status: Pending user approval
-- Baseline version reviewed: Draft feature specification and supporting planning artifacts dated 2026-10-31
-- Outcome: The current specification and plan are internally consistent with the known business and technical constraints, but they are not approved as a final baseline until the remaining unresolved decisions above are confirmed by the user.
+- Local SQLite persistence is supported and consistent with the approved local single-user model.
+- The plan supports historical queries and previous-date summaries.
+- Date editing and date-based recalculation are explicitly supported.
+- Unit validation and positive quantity rules are described and aligned with the approval.
+- Optional targets remain user-configured and nullable/unset instead of default values.
+- Loopback-only local runtime is consistent with the browser-accessibility requirement and the same-device deployment model.
 
-## Review conclusion
+## Validation coverage
 
-The project artifacts are ready for a human approval decision, but the review does not mark the specification as approved or baselined automatically. The current baseline is valid as a working draft only, and final approval is still pending user confirmation.
+The validation plan covers normal, invalid, boundary, and edge cases across the approved requirements, including:
+- valid meal creation
+- invalid required-field handling
+- category and unit validation
+- date editing and recalculation
+- historical meal access
+- deletion confirmation
+- target configuration and comparison
+- responsive desktop/mobile layouts
+- persistence across restarts
+
+## Identified corrections
+
+- Historical meal retention was corrected to reflect the approved business decision and to remove any remaining end-of-day cleanup assumption.
+- Date editing was formally recognized as an approved requirement and integrated into all related planning artifacts.
+- Unit handling was finalized to include a required unit list with no automatic conversions.
+- Default target suggestions were explicitly excluded from V1 and kept out of the approved requirement set.
+- Local single-user operation, persistence, and historical retention were aligned across all documents.
+
+## Review outcome
+
+- Review status: Approved for SDD Baseline v1.0.0
+- Baseline version: 1.0.0
+- Outcome: The project is consistent, policy-aligned, and ready to proceed as a planning baseline for implementation. No blocking issues remain at the SDD artifact level.
+
+## Final review conclusion
+
+The SDD project qualifies for the v1.0.0 baseline because every required business decision is explicitly approved, the requirements and tasks remain traceable, and the validation plan covers the relevant acceptance criteria without claiming successful implementation.
