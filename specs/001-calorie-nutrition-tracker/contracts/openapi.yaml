@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  title: Calorie and Nutrition Tracker API
+  version: 1.0.0
+  description: >
+    Local-only, single-user API. It exposes no account or cross-device access.
+    Generic target suggestion values are omitted pending approval of Q-004a.
+servers:
+  - url: http://127.0.0.1:8000/api
+    description: Local loopback instance
+paths:
+  /meals:
+    get:
+      operationId: listTodayMeals
+      summary: List meals recorded today
+      responses:
+        "200":
+          description: Meals for today in local machine time.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Meal"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    post:
+      operationId: createMeal
+      summary: Record a meal for today
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MealInput"
+      responses:
+        "201":
+          description: Meal created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meal"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /meals/{mealId}:
+    parameters:
+      - $ref: "#/components/parameters/MealId"
+    get:
+      operationId: getMeal
+      summary: Retrieve a saved meal
+      responses:
+        "200":
+          description: Saved meal.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meal"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    put:
+      operationId: updateMeal
+      summary: Replace editable fields of a saved meal
+      description: The meal date is fixed to today and is not editable.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MealInput"
+      responses:
+        "200":
+          description: Updated meal.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meal"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    delete:
+      operationId: deleteMeal
+      summary: Delete a saved meal
+      responses:
+        "204":
+          description: Meal deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /targets:
+    get:
+      operationId: getTargets
+      summary: Retrieve configured daily targets
+      responses:
+        "200":
+          description: Optional target values; null means unset.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Targets"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    put:
+      operationId: replaceTargets
+      summary: Configure or replace daily targets
+      description: >
+        Null explicitly unsets that measure; zero is a configured target. Target
+        values are retained across local date changes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Targets"
+      responses:
+        "200":
+          description: Current target configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Targets"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /targets/{measure}:
+    parameters:
+      - name: measure
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [calories, protein]
+    delete:
+      operationId: unsetTarget
+      summary: Remove one configured target
+      responses:
+        "204":
+          description: Target unset.
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /summary:
+    get:
+      operationId: getTodaySummary
+      summary: Retrieve today's totals and target comparisons
+      responses:
+        "200":
+          description: Derived totals for today and optional configured targets.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailySummary"
+        "500":
+          $ref: "#/components/responses/ServerError"
+components:
+  parameters:
+    MealId:
+      name: mealId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+  schemas:
+    MealCategory:
+      type: string
+      enum: [Breakfast, Lunch, Dinner, Snack]
+    QuantityUnit:
+      type: string
+      enum: [serving, g, ml]
+    MealInput:
+      type: object
+      additionalProperties: false
+      required:
+        - food_name
+        - category
+        - quantity_amount
+        - quantity_unit
+        - calories_kcal
+        - protein_g
+        - meal_date
+      properties:
+        food_name:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/MealCategory"
+        quantity_amount:
+          type: number
+          exclusiveMinimum: 0
+          multipleOf: 0.01
+        quantity_unit:
+          $ref: "#/components/schemas/QuantityUnit"
+        calories_kcal:
+          type: number
+          minimum: 0
+        protein_g:
+          type: number
+          minimum: 0
+        meal_date:
+          type: string
+          format: date
+          description: Must equal today's date in the local machine timezone.
+        meal_time:
+          type: string
+          pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+          description: Optional local time in HH:MM format without timezone.
+        notes:
+          type: [string, "null"]
+    Meal:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - food_name
+        - category
+        - quantity_amount
+        - quantity_unit
+        - calories_kcal
+        - protein_g
+        - meal_date
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        food_name:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/MealCategory"
+        quantity_amount:
+          type: number
+          exclusiveMinimum: 0
+          multipleOf: 0.01
+        quantity_unit:
+          $ref: "#/components/schemas/QuantityUnit"
+        calories_kcal:
+          type: number
+          minimum: 0
+        protein_g:
+          type: number
+          minimum: 0
+        meal_date:
+          type: string
+          format: date
+          description: Must equal today's date in the local machine timezone.
+        meal_time:
+          type: string
+          pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+          description: Optional local time in HH:MM format without timezone.
+        notes:
+          type: [string, "null"]
+    Targets:
+      type: object
+      additionalProperties: false
+      required: [calories_kcal, protein_g]
+      properties:
+        calories_kcal:
+          type: [number, "null"]
+          minimum: 0
+        protein_g:
+          type: [number, "null"]
+          minimum: 0
+    DailySummary:
+      type: object
+      required: [date, calories_kcal, protein_g, targets]
+      properties:
+        date:
+          type: string
+          format: date
+        calories_kcal:
+          type: number
+          minimum: 0
+        protein_g:
+          type: number
+          minimum: 0
+        targets:
+          $ref: "#/components/schemas/Targets"
+    Error:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
+                properties:
+                  loc:
+                    type: array
+                    items: {}
+                  msg:
+                    type: string
+                  type:
+                    type: string
+    ValidationError:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            required: [loc, msg, type]
+            properties:
+              loc:
+                type: array
+                items: {}
+              msg:
+                type: string
+              type:
+                type: string
+    NotFoundError:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          type: string
+    ServerError:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          type: string
+          example: The request could not be completed.
+  responses:
+    ValidationError:
+      description: Invalid request data; field-level validation details are returned.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+    NotFound:
+      description: The requested meal does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+    ServerError:
+      description: Unexpected storage or server failure; internal details are not exposed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ServerError"

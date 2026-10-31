@@ -1,0 +1,20 @@
+# Prompt and Decision Log
+
+This log records the major SDD activities completed for the Calorie and Nutrition Tracker. Exact original prompt wording is not always available in the retained project history, so the prompt summaries below are reconstructed summaries that clearly identify the nature of the original instruction.
+
+| Activity | Prompt or instruction summary | Artifact generated or modified | Important output | User decision or follow-up |
+| --- | --- | --- | --- | --- |
+| Constitution creation | Reconstructed prompt summary: create the project constitution to define a small, maintainable, and scope-controlled development baseline for the nutrition tracker. | `.specify/memory/constitution.md` | The project constitution establishes simplicity, user-centered design, data integrity, traceability, privacy, and scope-control principles. | No further business decision required at this stage; the constitution provides the governing baseline. |
+| Feature specification generation | Reconstructed prompt summary: capture the agreed business behavior, required functionality, constraints, and acceptance criteria for a manual calorie and nutrition tracker. | `specs/001-calorie-nutrition-tracker/spec.md` | A feature specification was created covering meal entry, daily totals, optional targets, responsive browser behavior, validation rules, and unresolved clarification items. | The business owner or user may still decide unresolved questions such as historical retention and date editing. |
+| Clarification activities | Reconstructed prompt summary: determine the business clarifications needed for fields, usage rules, targets, retention, access model, and responsiveness. | `specs/001-calorie-nutrition-tracker/spec.md` and `docs/clarification-log.md` | The specification records the business decisions and keeps unresolved questions visible in the open clarification log. | Clarifications were accepted as a baseline for the draft, but unresolved business items remain open. |
+| Technical planning | Reconstructed prompt summary: produce a simple technical plan that maps the approved feature requirements to a local React + FastAPI + SQLite implementation while preserving unresolved decisions and scope gates. | `specs/001-calorie-nutrition-tracker/plan.md` | The technical plan documents local-only server binding, date-scoped summaries, single-user design, and the requirement to avoid implementing suggested numeric target values before approval. | The plan explicitly preserves pending decisions rather than inventing a final policy. |
+| Task breakdown | Reconstructed prompt summary: define the implementation work into phases and tasks while preserving traceability to existing acceptance criteria and avoiding unsupported assumptions. | `specs/001-calorie-nutrition-tracker/tasks.md` | The tasks are grouped by user story and include requirement references; historical retention and date-edit blocking remain out of scope from the default plan. | The task list must still be reviewed against final business approvals. |
+| Planning analysis and manual review | Reconstructed prompt summary: review the SDD artifact set for consistency, identify missing/incorrect assumptions, and correct planning documents without implementing app code. | `docs/review-record.md`, `docs/validation-plan.md`, and updated planning spec artifacts | The review identified unresolved historical meal retention, date-edit assumptions, task traceability issues, and local-only technical rationale gaps. | User approval is still required before any final baseline or implementation decisions are treated as final. |
+
+## Decision summary
+
+- The feature spec and planning materials remain a draft baseline rather than an approved implementation baseline.
+- Historical meal retention remains unresolved and must not be converted into automatic deletion logic.
+- Meal date editing remains unresolved and must not be hard-locked by default.
+- Target suggestions remain blocked until the business owner approves the values and basis.
+- Local, single-user application behavior remains the approved operating model without multi-user or authentication requirements.
